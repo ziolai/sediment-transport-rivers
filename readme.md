@@ -4,7 +4,7 @@
 
 ## Section 1: Models for Sediment Transport in Rivers
 
-Model derivation for shallow water equations (depth integrated Navier-Stokes), boundary conditions and initial conditions (three coupled equations, two vertical velocity components $u(x,y,t)$ and $v(x,y,t)$ and water height $h(x,y,t)$). 
+Model derivation for the shallow water equations. Starting from 3D laminar time-dependent Navier-Stokes (conservation of mass and momentum) arrive at depth integrated Navier-Stokes model. Integrate conservation of mass and momentum from bottom where $z=0$ to surface where $z = \xi(x,y,t)$. From conservation of mass, obtain $\int_{z=0}^{z=\xi} \nabla {\mathbh v} \, dz$. Use the boundary conditions no-slip at $z=0$, the kinematic boundary conditions that particle remains attached at the water surface at $z = \xi(x,y,t)$ and the fact that $\dot{z} = w(x,y,z,t)$. Use Leibniz formula integral of a derivative. Do similar for convervation of momentum. Finally obtain three conservation equations for longitudinal velocity component $u(x,y,t)$, transversal velocity component $v(x,y,t)$ and water height $h(x,y,t)$). 
 
 Model derivation for coupling with sediment transport (scalar equation, describe from and to coupling Shallow Water Equations). 
 
@@ -18,8 +18,8 @@ Model derivation for coupling with sediment transport (scalar equation, describe
 
 ### Computational Domain
 
-1. 1D line segment 
-2. 2D rectangular channel with top and bottom wall, left inflow, right outflow. Inflow and outflow modeled by periodic boundary conditions. 
+1. 1D line segment: linear and non-linear model. 
+2. 2D rectangular channel with top and bottom wall, left inflow, right outflow. Inflow and outflow modeled by periodic boundary conditions. Analytical solution solution with uniform velocity profile avialable. Non-linear transport term drops out. 
 
 ## Section 2: The Numerics of the Harmonic Balance Method 
 
@@ -50,15 +50,18 @@ Can we extend to more terms in the Fourier expansion? Does using [symbolics.jl](
 
 ### Mass-Spring-Damper System 
 
-a/ Problem formuation: periodically forced mass-spring-damper with non-linear spring. Initially at rest. How does motion change with frequency of the driving force. Find equilibrium points and their kind. 
+a/ Problem formuation: periodically forced mass-spring-damper with non-linear spring. Duffing equation.  Initially at rest. How does motion change with frequency of the driving force. Find equilibrium points and their kind. 
 
 b/ Harmonic Balance or Fourier Spectral Method using HarmonicBalance.jl 
 
 c/ Transient Simulation: using DifferentialEquations.jl 
 
-d/ References 
-wiki on Harmonic Balance Method: [link](https://en.wikipedia.org/wiki/Harmonic_balance). 
-book Peter Deuflard 
+d/ References: 
+1. Duffing equation: [wiki](https://en.wikipedia.org/wiki/Duffing_equation#CITEREFJordanSmith2007): provides details of harmonic balance method for single harmonic.  
+2. Harmonic balance method applied to the Duffing equation: [youtube link](https://www.youtube.com/watch?v=4gCx4_RWeS8) 
+3. wiki on Harmonic Balance Method: [link](https://en.wikipedia.org/wiki/Harmonic_balance). 
+4. book by Jordan and Smith: [link](https://www.google.nl/books/edition/Nonlinear_Ordinary_Differential_Equation/ewtREAAAQBAJ?hl=en&gbpv=1&dq=Jordan+smith+nonlinear+ordinary+differential+equations&printsec=frontcover) 
+5. book Peter Deuflard 
 
 ### Scalar Linear PDE in 1D Space and Time 
 
@@ -116,7 +119,11 @@ d/ References
 - Elementary introduction: [Thinking Julia](https://benlauwens.github.io/ThinkJulia.jl/latest/book.html);
 - Aalto Short Course: [julia-introduction](https://github.com/AaltoRSE/julia-introduction); 
 - Video Collection by Chris Rackauckas: [link](https://www.youtube.com/playlist?list=PLCAl7tjCwWyGjdzOOnlbGnVNZk0kB8VSa) 
-- Pointer to lots of goodies: [Nouvelles Julia](https://pnavaro.github.io/NouvellesJulia/pages/2022_03.html); 
+- Pointer to lots of goodies: [Nouvelles Julia](https://pnavaro.github.io/NouvellesJulia/pages/2022_03.html);
+
+### Homebrewed by D. Lahaye 
+
+- solving ODEs, including sytems obtained from spatial discretization of PDEs: [link to notebook](https://github.com/ziolai/ventura-modeling/blob/main/jupyter-notebooks/intro_ode.ipynb); 
 
 ### Shallow Water Equation (SWE) Solvers in Julia 
 
@@ -136,10 +143,12 @@ This type of analysis is referred to as a bifurcation analysis. Dedicated tools 
 
 ## References 
 
-1. PhD Thesis of Tjebbe Hepkema: Chapter 5 in particular: [link](https://mega.nz/file/nMF2DaDA#W-nuZ_LKQkcN8x-dZiXY4VD1gNRiTzf46RH0RQCEP9E)
-2. Description of code by Tjebbe Hepkema: [link](https://mega.nz/file/vJMmjZpA#8DapHLz7mGZsncUJTT2i3J4yukdMyz0oqmiUjXrsVbY)
-3. PhD Thesis of Mirian Ter Brake: [link](https://repository.tudelft.nl/islandora/object/uuid:5cfcad13-0140-4ecc-a61b-217191b7611f?collection=research)
-4. 2022 minor student report: [link](https://mega.nz/file/zMVySRYS#Pojfaiy0OrE1bncgTiRftYnuLzmDgiZM4t_xEneQSGQ)
+1. Master thesis of Marco Roozendaal: [link](https://repository.tudelft.nl/islandora/object/uuid%3Aedc2ffd6-00fd-4cd6-883b-13b14528cb72?collection=education) 
+2. PhD Thesis of Tjebbe Hepkema: Chapter 5 in particular: [link](https://mega.nz/file/nMF2DaDA#W-nuZ_LKQkcN8x-dZiXY4VD1gNRiTzf46RH0RQCEP9E). Includes linear stability analysis. 
+3. Description of code by Tjebbe Hepkema: [link](https://mega.nz/file/vJMmjZpA#8DapHLz7mGZsncUJTT2i3J4yukdMyz0oqmiUjXrsVbY)
+4. PhD Thesis of Mirian Ter Brake: [link](https://repository.tudelft.nl/islandora/object/uuid:5cfcad13-0140-4ecc-a61b-217191b7611f?collection=research)
+5. 2022 minor students report: [link](https://mega.nz/file/zMVySRYS#Pojfaiy0OrE1bncgTiRftYnuLzmDgiZM4t_xEneQSGQ)
+6. 2022 minor students github repository: [link](https://github.com/victoriayuechen/Nonlinear-tidal-bars)  
 
 
 ```julia
