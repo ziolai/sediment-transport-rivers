@@ -1,4 +1,4 @@
-# The Analytics and Numerics of Sediment Transport in Rivers - Modeling Tidal Flow using the Shallow Water Equations 
+# The Analytics and Numerics of Sediment Transport in Rivers - Modeling Tidal Flow using the Shallow Water Equations - Harmonic Balancing vs. Time Integration 
 
 ## Domenico Lahaye and Henk Schuttelaars 
 
@@ -8,9 +8,15 @@ Describe computational challenges in modeling tidal flow and sediment transport 
 
 ## Section 2: Models for Tidal Flow and Sediment Transport in Rivers
 
-### Goal 
+### Project Goals 
 
 Shallow water equations describe non-linear propagation of water waves. When exicited periodically (e.g. by tidal motion at the inlet of the channel), the non-linear nature of the equations will deform (modulate) the amplitude and frequency of the driving system. After sufficiently long time, the signal will become periodic again. The goal of the project is to compute the amplitude and frequency contents of this resulting periodic signal. (A demo using scalar wave equation with non-linear damping (with animation of both the excitation and the solution with both non-linear damping or non-linear stiffness) would be good to have here).   
+
+### Same Project Goals Reformulated 
+
+- numerics: The shallow water equations (or any wave equation) with time-harmonic excitation can be solved by the classical approach in which discretization in space is followed by discretization in time. This approach, however, is possibly too time-consuming in case that time-periodic solutions are sought for. Alternative solution methods are called for;  
+- computer implementation: classical approach resort to sparse linear algebra that is hard to accelerate on GPU
+- harmonic balance method: takes periodicity into account from the start and can be implementated using Fast Fourier Transforms (FFT) that are blazingly fast on GPU. 
 
 ### Model derivation for the shallow water equations
 
@@ -23,6 +29,8 @@ Describe full problem set-up including dimensions of domain, final time and init
 Model derivation for coupling with sediment transport (scalar equation, describe from and to coupling Shallow Water Equations). 
 
 Discuss papers on harmonic balancing applied to the shallow water eqautions (papers by Westertink among others and reports by Rijkswaterstaat).  
+
+### Coupling with sediment transport 
 
 ### Pointers to literature on concepts 
 - Shallow Water Equations [wiki](https://en.wikipedia.org/wiki/Shallow_water_equations)
@@ -37,7 +45,7 @@ Discuss papers on harmonic balancing applied to the shallow water eqautions (pap
 1. 1D line segment: linear and non-linear model. 
 2. 2D rectangular channel with top and bottom wall, left inflow, right outflow. Inflow and outflow modeled by periodic boundary conditions. Analytical solution solution with uniform velocity profile avialable. Non-linear transport term drops out. 
 
-## Section 3: Prelimiaries 
+## Section 3: Preliminaries 
 
 ### Analytical and Symbolic Computations 
 
@@ -47,35 +55,36 @@ See [notebook on analytical and symbolic computations](./analytical_symbolic_com
 
 See [notebook on Time-Integration using DifferentialEquations.jl](https://github.com/ziolai/software/blob/master/intro_ode.ipynb). 
 
-## Section 4: Harmonic Balance vs. Time Integration 
+## Section 4:  Harmonic Balance vs. Time Integration for Mass-Spring-Damper Systems  
 
-### Introduction: Wish - Dream - Goal - Ambition 
-
-- numerics: The shallow water equations (or any wave equation) with time-harmonic excitation can be solved by the classical approach in which discretization in space is followed by discretization in time. This approach, however, is possibly too time-consuming in case that time-periodic solutions are sought for. Alternative solution methods are called for;  
-- computer implementation: classical approach resort to sparse linear algebra that is hard to accelerate on GPU
-- harmonic balance method: takes periodicity into account from the start and can be implementated using Fast Fourier Transforms (FFT) that are blazingly fast on GPU. 
-
-### Starting Humbly: Scalar Second Order ODE without External Forcing 
+### Lift-Off on Harmonic Balance Method: Scalar Second Order ODE without External Forcing 
 
 The harmonic balance method is introduced on this [harmonic_balance](https://en.wikipedia.org/wiki/Harmonic_balance) wiki page. We here briefly summarize the content of this page.  
-The wiki page introduces the equation $\ddot{x}(t) + x^3(t) = 0$. Observe no initial or boundary conditions are given. Observe that equation is non-linear and that therefore superposition does not apply.  
+The wiki page introduces the equation $\ddot{x}(t) + x^3(t) = 0$. Observe the cubic non-linearity. Observe no initial or boundary conditions are given. Observe that equation is non-linear and that therefore superposition does not apply.  
 
 First assume solution of the form $x(t) = A \, \cos(\omega \, t)$ where $A$ and $\omega$ are constants to be determined. Then $\ddot{x}(t) = - A \, \omega^2 \, \cos(\omega \, t)$ and 
 $x^3(t) = A^3 \, \cos^3(\omega \, t) = A^3 \, [ 3/4 \cos(\omega \, t) + 1/4 \cos(3\omega \, t)] $. Observe that the non-linearity gives raise to the third-order harmonic. Then equation becomes 
-$ [ - A \, \omega^2 + 3/4 A^3] \cos(\omega t)+ 1/4 A^3 \cos(3\omega \, t) = 0$. Or after neglecting the third-order harmonic term, $[ - A \, \omega^2 + 3/4 A^3] \cos(\omega t) = 0 $, or $- A \, \omega^2 + 3/4 A^3$ or 
+$ [ - A \, \omega^2 + 3/4 A^3] \cos(\omega t)+ 1/4 A^3 \cos(3\omega \, t) = 0$. Or after neglecting the third-order harmonic term, $[ - A \, \omega^2 + 3/4 A^3] \cos(\omega t) = 0 $, or $- A \, \omega^2 + 3/4 A^3 = 0$ or 
 $\omega = 3/4 \sqrt{A}$. Observe how frequency $\omega$ is proportional to the square root of amplitude $A$. 
 
-### Unrelated Fourier Methods in Space 
+### First Order in Time Periodically Forced Mass-Damper System
+ 
+We start by explaining the harmonic balance method using first-order in time systems. These systems require less algebra to solve than second-order in time systems. Our endavor is to explain that harmonic balance method require less algebra to start with.    
 
-We observe here that the project aims at applying Fourier decomposition in **time-domain**. The method is thus not to be confused with methods that apply Fourier methods in **space** domain. The latter methods appear under various names. Examples include [spectral methods](https://en.wikipedia.org/wiki/Spectral_method) and related tools such as e.g. book Boyd on Fourier spectral methods, ApproxFun.jl, SpectralKit.jl and BSplineKit.jl.  
+See [notebook on mass-damper systems](./mass-damper-systems.ipynb). 
 
- ### Mass-Damper System
+### Second Order in Time Periodically Forced Mass-Spring-Damper System 
 
-See [notebook on mass-damper systems](./mass-damper-systems.ipynb). Includes the Duffing equation.
+See [notebook on mass-spring-damper systems](./mass-spring-damper-systems.ipynb). Includes the Duffing equation.
+ 
+### References 
 
-### Mass-Spring-Damper System 
+1. Chapter 7 of the book Nonlinear Ordinary Differential Equation by Jordan and Smith discusses forced oscillations: see [link](https://www.google.nl/books/edition/Nonlinear_Ordinary_Differential_Equation/ewtREAAAQBAJ?hl=en&gbpv=1&dq=Jordan+smith+nonlinear+ordinary+differential+equations&printsec=frontcover)
+2. paper by Elliot e.a. Nonlinear damping and quasi-linear modeling provides reference solutions for the harmonic balence method;
 
-See [notebook on mass-spring-damper systems](./mass-spring-damper-systems.ipynb). 
+## Section 5:  Harmonic Balance vs. Time Integration for Scalar Wave Equation 
+
+Add periodic forcing and non-linearity. 
 
 ### Scalar Linear and Non-Linear First Order PDE in 1D Space and Time: Burgers Equation 
 
@@ -93,7 +102,9 @@ Repeat above for non-linear convection-diffusion equation $u_t + u \, u_x(x,t) =
 
 ### Scalar Linear and Non-Linear Second Order PDE in 1D Space and Time: Wave Equation 
 
-See [notebook on scalar water equation](./second-order-scalar-wave-damped.ipynb). 
+See [notebook on scalar water equation](./second-order-scalar-wave-damped.ipynb).
+
+## Section 6:  Harmonic Balance vs. Time Integration for Shallow Water Equation 
 
 ### System of Two First Order PDEs
 
@@ -111,15 +122,11 @@ c/ Transient Simulation: using Trixi.jl in 1D space and time
 
 a/ Problem formuation: 
 
+## Section 7: Outside of Scope of Project: Fourier Methods in Space 
 
-### Coupling with Scalar Sediment Transport
+We observe here that the project aims at applying Fourier decomposition in **time-domain**. The method is thus not to be confused with methods that apply Fourier methods in **space** domain. The latter methods appear under various names. Examples include [spectral methods](https://en.wikipedia.org/wiki/Spectral_method) and related tools such as e.g. book Boyd on Fourier spectral methods, ApproxFun.jl, SpectralKit.jl and BSplineKit.jl.  
 
-### References 
-
-1. Chapter 7 of the book Nonlinear Ordinary Differential Equation by Jordan and Smith discusses forced oscillations: see [link](https://www.google.nl/books/edition/Nonlinear_Ordinary_Differential_Equation/ewtREAAAQBAJ?hl=en&gbpv=1&dq=Jordan+smith+nonlinear+ordinary+differential+equations&printsec=frontcover)
-2. paper by Elliot e.a. Nonlinear damping and quasi-linear modeling provides reference solutions for the harmonic balence method;
-
-## Section 5: The Julia Programming Language 
+## Section 8: The Julia Programming Language 
 
 ### Introductory material 
 
