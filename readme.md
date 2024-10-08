@@ -33,11 +33,18 @@ Supporting notebooks for this level include
 2. notebook on [Time-Integration using DifferentialEquations.jl](https://github.com/ziolai/software/blob/master/intro_ode.ipynb)
 3. notebook on [analytical and symbolic computations](./analytical_symbolic_computations.ipynb);  
 
+The <b>goals</b> of beginners level of the assignments are to: 
+1. solve periodic solutions (equilibrium between forcing, damping and non-linear stiffness) of the Duffing equation using <b>time-integration</b>. Investigate aspects such as computational cost (CPU-time and memory requirements) vs. accuracy (time step size, absolute tolerance, relative tolerance), implicit vs. explicit time integration methods, low vs. high order time integration methods, second order vs. coupled first order formulation, operator splitting allowing to treat linear stiffness implicitly and non-linar stiffness explicitly, automatic differentiation to compute the Jacobian and GPU acceleration;
+2. solve periodic solution using the <b>harmonic balance method</b>. As above. Include number of harmonics in the harmonic balance soliution;' 
+3. investigate how periodic solutions change with <b>changing parameters</b> (stiffness, damping, amplitude and frequency of the excitation); 
+
+In case successful, possibly extend to multiple interconnected point masses. 
+
 ### Intermediate Level: Non-Linear Scalar Wave Equation 
 
 Here we describe water wave as transversal or longitudinal wave propagation in spring or membrane excited by periodic forcing. The physics of the change of water height is neglected. The effect of the non-linearity on the temporal frequency content of the solution will again be explored. 
 
-The primary notebook for this level is [notebook on scalar wave equations](./scalar-wave-equation.ipynb)
+The primary notebook for this level is [notebook on scalar wave equations](./scalar-wave-equation.ipynb) (required extension from 1D space to 2D space and implementation of periodic boundary conditions). 
 
 Supporting notebooks
 1. seperation of variables to solve linear wave equation analytically taking various boundary conditions into account; 
@@ -48,7 +55,7 @@ Supporting notebooks
 
 Shallow water equations describe the propagation of water waves in rivers. Both linear and non-linear variants of the model. They are derived from the Navier-Stokes equations by averaging in the depth direction. 
 
-The primary notebook for this level is [notebook on shallow water equations](./shallow-water-equations.ipynb)
+The primary notebook for this level is [notebook on shallow water equations](./shallow-water-equations.ipynb) (requires implementation of linear SWE (operators constant throught time integration) and non-linear SWE (operators updated at each time step)). 
 
 ### Expert+ Level: Pattern Formation in Sediment Transport in Rivers 
 
