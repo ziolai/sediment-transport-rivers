@@ -177,9 +177,7 @@ $$
 $$
 
 $$
-\frac{\partial {\bf u}}{\partial t} + {\bf u} \cdot \nabla {\bf u} 
-  + \frac{C_d \| {\bf u} \| \, {\bf u}}{H + \xi - h} + g \, \nabla \xi 
-  + f \, E \, {\bf u} + {\bf F}_p = {\bf 0}  
+\frac{\partial {\bf u}}{\partial t} + {\bf u} \cdot \nabla {\bf u} + \frac{C_d \| {\bf u} \| \, {\bf u}}{H + \xi - h} + g \, \nabla \xi + f \, E \, {\bf u} + {\bf F}_p = {\bf 0}  
 $$ 
 
 Lorentz approximation for the non-linear friction. 
