@@ -107,11 +107,11 @@ The primary notebook for this level is [notebook on shallow water equations](./s
 2. reference solution by running a third party code; 
 
 $$
-\frac{\partial \xi}{\partial t} = -H \, = \text{div}(u) = -  H \, \frac{\partial u}{\partial x}  
+\frac{\partial \xi}{\partial t} = -H \text{div}(u) = -  H \, \frac{\partial u}{\partial x}  
 $$
 
 $$
-\frac{\partial u}{\partial t} = -g \, [ \text{grad}(\xi) ]_x + f(x,t) = - g \, \frac{\partial \xi}{\partial x} + f(x,t)
+\frac{\partial u}{\partial t} = -g [ \text{grad}(\xi) ]_x + f(x,t) = - g \, \frac{\partial \xi}{\partial x} + f(x,t)
 $$
 
 A point of departure for this work is the [notebook on scalar transport equations](./advection-equation.ipynb)
@@ -126,25 +126,25 @@ A point of departure for this work is the [notebook on scalar transport equation
 <b>Problem Formulation</b> 
 
 $$
-\frac{\partial \xi}{\partial t} + H \, ( \nabla  \cdot {\mathbf u} )  = 0 
+\frac{\partial \xi}{\partial t} + H ( \nabla  \cdot {\mathbf u} )  = 0 
 $$
 
 $$
-\frac{\partial {\bf u}}{\partial t} + g \, \nabla \xi + f \, {\bf u}^{\perp} + {\bf F}_p = {\bf 0}  
+\frac{\partial {\bf u}}{\partial t} + g \nabla \xi + f \, {\bf u}^{\perp} + {\bf F}_p = {\bf 0}  
 $$ 
 
 or more explicitly in terms of components (dropping Coreolis terms)  
 
 $$
-\frac{\partial \xi}{\partial t} + H \, ( \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} )  = 0  
+\frac{\partial \xi}{\partial t} + H ( \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} )  = 0  
 $$
 
 $$
-\frac{\partial {u}}{\partial t} = - g \, \frac{\partial \xi}{\partial x} + {\bf F}_{p,x}   
+\frac{\partial {u}}{\partial t} = - g \frac{\partial \xi}{\partial x} + {\bf F}_{p,x}   
 $$ 
 
-$$
-\frac{\partial {v}}{\partial t} = - g \, \frac{\partial \xi}{\partial y} + {\bf F}_{p,y}  
+$$ 
+\frac{\partial {v}}{\partial t} = - g \frac{\partial \xi}{\partial y} + {\bf F}_{p,y}  
 $$ 
 
 Impose periodic boundary conditions for $\xi(x,y,t)$, $u(x,y,t)$ and $v(x,y,t)$. Impose initial conditions for $\xi(x,y,t)$, $u(x,y,t)$ and $v(x,y,t)$. 
@@ -154,15 +154,15 @@ Impose periodic boundary conditions for $\xi(x,y,t)$, $u(x,y,t)$ and $v(x,y,t)$.
 <b>Spatial Discritization</b> For the spatial discritization, we consider a uniform mesh with $N_x+1$ grid points in $x$-direction and $N_y+1$ grid points in $y$-direction. The total number of grid points is thus equal to $N = (N_x+1)(N_y+1)$. We assume a staggered layout of the unknowns $u(x,y,t)$, $v(x,y,t)$ and $\xi(x,y,t)$ on this mesh. We denote by $B_x$ and $B_y$ the discrete spatial derivate operators on the mesh. The operators $[B_x;B_y]$ and $[B_x^T \, B_y^T]$ then represent the gradient and the divergence operators, respctively. The spatial discretization results in time-dependent vectors $\mathbf{\xi}(t)$, $\mathbf{u}(t)$ and $\mathbf{v}(t)$ that satisty the following set of ODEs 
 
 $$
-\frac{d\mathbf{\xi}}{dt} + H \, ( B_x^T \mathbf{u} + B_y^T \mathbf{v}  )  = \mathbf{0} 
+\frac{d\mathbf{\xi}}{dt} + H ( B_x^T \mathbf{u} + B_y^T \mathbf{v}  )  = \mathbf{0} 
 $$
 
 $$
-\frac{d \mathbf{u}}{dt} = - g \, B_x \mathbf{u} + {\bf F}_{p,x}   
+\frac{d \mathbf{u}}{dt} = - g  B_x \mathbf{u} + {\bf F}_{p,x}   
 $$ 
 
 $$
-\frac{d \mathbf{v}}{dt} = - g \, B_y \mathbf{v}  + {\bf F}_{p,y}  
+\frac{d \mathbf{v}}{dt} = - g B_y \mathbf{v}  + {\bf F}_{p,y}  
 $$ 
 
 <b>Method of Underdetermined Coefficients</b>
@@ -173,11 +173,11 @@ $$
 2. reference solution by running a third party code; 
 
 $$
-\frac{\partial \xi}{\partial t} + \nabla \cdot \left[ (H + \xi - h) \, {\mathbf u} \right] = 0 
+\frac{\partial \xi}{\partial t} + \nabla \cdot \left[ (H + \xi - h) {\mathbf u} \right] = 0 
 $$
 
 $$
-\frac{\partial {\bf u}}{\partial t} + {\bf u} \cdot \nabla {\bf u} + \frac{C_d \| {\bf u} \| \, {\bf u}}{H + \xi - h} + g \, \nabla \xi + f \, E \, {\bf u} + {\bf F}_p = {\bf 0}  
+\frac{\partial {\bf u}}{\partial t} + {\bf u} \cdot \nabla {\bf u} + \frac{C_d \| {\bf u} \| {\bf u}}{H + \xi - h} + g \nabla \xi + f E {\bf u} + {\bf F}_p = {\bf 0}  
 $$ 
 
 Lorentz approximation for the non-linear friction. 
