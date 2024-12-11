@@ -130,15 +130,13 @@ $$
 $$
 
 $$
-\frac{\partial {\bf u}}{\partial t} + g \, \nabla \xi 
-  + f \, {\bf u}^{\perp} + {\bf F}_p = {\bf 0}  
+\frac{\partial {\bf u}}{\partial t} + g \, \nabla \xi + f \, {\bf u}^{\perp} + {\bf F}_p = {\bf 0}  
 $$ 
 
 or more explicitly in terms of components (dropping Coreolis terms)  
 
 $$
-\frac{\partial \xi}{\partial t} 
-+ H \, ( \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} )  = 0  
+\frac{\partial \xi}{\partial t} + H \, ( \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} )  = 0  
 $$
 
 $$
@@ -156,8 +154,7 @@ Impose periodic boundary conditions for $\xi(x,y,t)$, $u(x,y,t)$ and $v(x,y,t)$.
 <b>Spatial Discritization</b> For the spatial discritization, we consider a uniform mesh with $N_x+1$ grid points in $x$-direction and $N_y+1$ grid points in $y$-direction. The total number of grid points is thus equal to $N = (N_x+1)(N_y+1)$. We assume a staggered layout of the unknowns $u(x,y,t)$, $v(x,y,t)$ and $\xi(x,y,t)$ on this mesh. We denote by $B_x$ and $B_y$ the discrete spatial derivate operators on the mesh. The operators $[B_x;B_y]$ and $[B_x^T \, B_y^T]$ then represent the gradient and the divergence operators, respctively. The spatial discretization results in time-dependent vectors $\mathbf{\xi}(t)$, $\mathbf{u}(t)$ and $\mathbf{v}(t)$ that satisty the following set of ODEs 
 
 $$
-\frac{d\mathbf{\xi}}{dt} 
-+ H \, ( B_x^T \mathbf{u} + B_y^T \mathbf{v}  )  = \mathbf{0} 
+\frac{d\mathbf{\xi}}{dt} + H \, ( B_x^T \mathbf{u} + B_y^T \mathbf{v}  )  = \mathbf{0} 
 $$
 
 $$
