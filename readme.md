@@ -1,7 +1,7 @@
 # Riding Shallow Waters 
 
 <div>
-<img src="./riding-shallow-waters.png" width=600 /> 
+<img src="./antwerp-port.png" width=600 /> 
 </div>
 
 
@@ -28,6 +28,9 @@ The <b>goals</b> of the project include
 1. to solve the shallow water equations using a blend of analytical and numerical methods;   
 2. to compute the amplitude and temporal frequency content of the computed axial and transversal velocity components and the water height;
 3. to discover patterns in the sediment formation and study the stability of these patterns (via bifurcation analysis).
+
+<b>Socio-economical impact of this research</b> 
+Protect and save-guard infrastructure. Maintenance of passage ways in harbour (Antwerp as example). 
 
 The <b>use of the Julia programming language</b> is an integral part of the learning objectives of this project. Non-linear terms play an essential role in modifying the temporal frequency content of waves as they propagate. The analysis of these non-linear terms requires the computation of the Jacobian, independent of whether a transient time-stepping or harmonic balance method is used. Functions to compute these Jacobians in Python do exist. These functions, however, are either computationally costly (in case that finite difference quotients are used) or non-trivial to use (in case that automatic differentiation in a library like e.g. [JAX](https://jax.readthedocs.io/en/latest/quickstart.html) is used). Switching to Julia alleviates these bottlenecks. 
  
