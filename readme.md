@@ -88,9 +88,7 @@ $$
 The partial differential equation for the unknown string displacement $u(x,t)$ we intend to solve can be written as 
 
 $$
-\frac{\partial^2 \, u}{\partial t^2} 
-+ \gamma \frac{\partial \, u}{\partial t} 
-+ \gamma_3 \left( \frac{\partial \, u}{\partial t} \right)^3 
+\frac{\partial^2 \, u}{\partial t^2} + \gamma \frac{\partial \, u}{\partial t} + \gamma_3 \left( \frac{\partial \, u}{\partial t} \right)^3 
 = c^2 \frac{\partial^2 \, u}{\partial x^2} + F_0(x)\, \sin(\omega_d \, t)   
 $$ 
 
