@@ -117,19 +117,36 @@ with $u_0(x)$ left to be specified.
 
 <b>Analytical computations using pen and paper</b> 
 Supporting notebooks for this level include:
-1. [beginner_analytical](./beginner_analytical.ipynb): seperation of variables for the scalar wave equation with and without damping. Eigenvalues, eigenmodes, resonant frequency, frequency response sweeps; 
+1. [beginner_analytical](./beginner_analytical.ipynb): seperation of variables for the scalar wave equation with and without damping. Eigenvalues, eigenmodes, resonant frequency, frequency response sweeps;
+
+Questions: 
+1. how to implement Duhamel's principle to take periodic external drive into account. Should be do-able using sympy. An example is given at [this link](https://stackoverflow.com/questions/74672385/how-to-convolution-integrationduhamel-integration-by-python); 
+2. how to extend from standing wave to traveling wave solutions? 
 
 <b>Symbolic computations using sympy</b>
 1. [beginner_symbolic](./beginner_symbolic.ipynb): symbolic solution of the scalar Helmholtz equation (scalar wave equation without damping - sinusoidal forcing - single harmonic harmonic harmonic balance method) and of two coupled Helmholtz equation (scalar wave equation with damping - cosinus mode appears);
 
+Questions: 
+1. how to extend from standing wave to traveling wave solutions? 
+2. How to use meta programming and more specifically the functions prewalk and postwalk together with the macro @capture defined by the package [MacroTools.jl](https://github.com/FluxML/MacroTools.jl) (utilities for pattern matching and recursive transformation of expressions) to derive the harmonic balance equations fully automatically from the time-domain equations? 
+
 <b>Solving the systems of ODEs for the amplitude of the harmonic modes numerically using a shooting method</b>
 1. [beginner_shooting_method](beginner_shooting_method.ipynb): solve the 1D wave equation using the harmonic balance method by solving the boundary value problem for the amplitiudes of the harmonic amplitiudes using a shooting method. Start by consering an expansion in a single harmoinic. In this case, the harmonic balance method harmonic balance method results in a coupled system of two Helmholtz equations for the amplitudes $A(x)$ and $B(x)$. Possibly extend later to two or more harmonics. Compare the solutions obtained by time-integration and the harmonic balance method for various frequencies. Repeat above for various values of the amplitude of the non-linear damping and investigate how the amplitide of the dominant resonant modes is affected (i.e., perform a bifurcation analysis);
+
+Questions: 
+1. what is the computational efficiency of the shooting method (run verbose, profile using macro @btime)? How does computational efficiency change with the initial guess employed? 
 
 <b>Solving the non-linear wave equation using ModelingToolkit</b> 
 1. [beginner_modeling_toolkit](beginner_modeling_toolkit.ipynb)
 
+Questions:  
+1. how mature is the combination of ModelingToolkit.jl and MethodofLines.jl to solve the shallow water equations using a staggered finite difference stencil. See [staggered in MethodofLines](https://docs.sciml.ai/MethodOfLines/stable/staggered/).   
+
 <b>Solving the non-linear wave equation using a home-brewed finite difference method</b>
-1. [beginner_fdm](./beginner_fdm.ipynb): solve the 1D wave equation numerically by appling the method of lines. First discretize the equation in space. Subsequently solve the initial value problem for the resulting coupled system of ordinary differential equations using time-integration. For spatial discretization, a central finite difference scheme on a uniform mesh can be used. (Provide modList alternatives such as ApproxFun and Chmly here). For time integration, methods provided by [SciML.jl](https://docs.sciml.ai/Overview/stable/) can be used. Time-integration provides a reference solution. Investigate the computed solution in frequency domain using Fourier transformations. Repeat for various driving frequencies and investigate the occurance of resonant frequencies and corresponding resonant eigenmodes. Repeat for various scenarios; 
+1. [beginner_fdm](./beginner_fdm.ipynb): solve the 1D wave equation numerically by appling the method of lines. First discretize the equation in space. Subsequently solve the initial value problem for the resulting coupled system of ordinary differential equations using time-integration. For spatial discretization, a central finite difference scheme on a uniform mesh can be used. (Provide modList alternatives such as ApproxFun and Chmly here). For time integration, methods provided by [SciML.jl](https://docs.sciml.ai/Overview/stable/) can be used. Time-integration provides a reference solution. Investigate the computed solution in frequency domain using Fourier transformations. Repeat for various driving frequencies and investigate the occurance of resonant frequencies and corresponding resonant eigenmodes. Repeat for various scenarios;
+
+Questions:  
+1. how to extend the linear finite difference code to treat non-linear problems? How to derive the Jacobian? How to solve the linear system at each Newton iteration? 
 
 ### Section 2.6: Intermediate Level: Scalar Wave Equation with Cubic Damping for a Rectangular Membrane 
 
@@ -148,7 +165,7 @@ The <b>goals</b> of the expert level is to extend previous results to the shallo
 
 Add coupling of the shallow water equation with additional transport (convection-diffusion) equation for concentration of sediment in water. Describe two-way coupling between water flow and sediment transport. Water flow transports the sediment. The sediment add mass and viscosity to the water and slows down the water.    
 
-Add bifurcation analysis to 
+Add bifurcation analysis results to be persued.  
 
 ## Section 7: Introductory material on the Julia Programming Language
 
