@@ -37,8 +37,8 @@ Julia provides various package to analyze and solve the shallow water equations.
 - [WaterWaves1D.jl](https://github.com/WaterWavesModels/WaterWaves1D.jl): unidimensional surface gravity waves, aka water water 
 
 Supporting notebooks for this level include
-1. notebook on [scalar advection equation](./scalar_advection-equation.ipynb) (here we exclude diffusion. Wave propagation in one direction only);
-1. notebook on [one-dimensional shallow water equations](./one-dim-shallow-water-equations.ipynb) (coupled system of two transport equations); 
+1. notebook on [scalar advection equation](./scalar_advection_equation.ipynb) (here we exclude diffusion. Wave propagation in one direction only);
+1. notebook on [one-dimensional shallow water equations](./shallow-water-equations.ipynb) (coupled system of two transport equations); 
 
 ## Section 3: Damped Non-Linear Wave Equation with Periodic Forcing
 
