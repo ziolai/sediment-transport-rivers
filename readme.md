@@ -7,12 +7,6 @@
 
 ## with Domenico Lahaye and Henk Schuttelaars 
 
-## Open Issues
-
-1. expansion in Fourier modes of the non-linear friction term involving the non-differentiable term $\| \mathbf{u} \|$ (resort to Taylor expansions?) and the division by height (multiply entire equations by the height?)
-2. solving the linear harmonic balance equations (1/2): does the manipulation of truncated Fourier series leads to a fast matrix-vector multiplication (convolution)?
-3. solving the linear harmonic balance equations (2/2): are effective preconditioners (variants of shifted Laplace) available?  
-   
 ## Section 1: Introduction 
 
 This project aims at contributing to the computational modeling of [tidal flows](https://en.wikipedia.org/wiki/Tide#Current) and [sediment transport](https://en.wikipedia.org/wiki/Sediment_transport) in rivers. The flow of water in rivers can be described by the [shallow water equations](https://en.wikipedia.org/wiki/Shallow_water_equations) (linear vs. non-linear variant, laminar vs. turbulent model). When exicited periodically (e.g. by tidal motion at the inlet of the channel), the non-linear nature of the equations will deform (modulate) the amplitude and frequency of the driving system. After sufficiently long time, the signal will become periodic again. Both time-integration (after spatial discretization or method of lines) and harmonic balance methods (either after spatial or temporal discretization) will be explored. See the Section entitled Analysis in [wikipedia page on tidal flows](https://en.wikipedia.org/wiki/Tide#Current) for a motivation of harmonic balance method in the context of this project. 
@@ -104,7 +98,12 @@ $$
 = c^2 \frac{\partial^2 \, u}{\partial x^2} + F_0(x)\, \sin(\omega_d \, t)   
 $$ 
 
-We can flip the sign of the non-linear term for fun and explore how higher order harmonics are generated. 
+We can flip the sign of the non-linear term for fun and explore how higher order harmonics are generated. We can also consider the alternative model 
+
+$$
+\frac{\partial^2 \, u}{\partial t^2} + \gamma \frac{\partial \, u}{\partial t} + \gamma_3 \| \frac{\partial \, u}{\partial t} \|^2 \frac{\partial \, u}{\partial t} 
+= c^2 \frac{\partial^2 \, u}{\partial x^2} + F_0(x)\, \sin(\omega_d \, t)   
+$$
 
 In defining the boundary and initial conditions, we will distinguish between a standing wave (separation of variables) and a traveling wave (method of characteristics) problem.
 
