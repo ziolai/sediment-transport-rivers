@@ -1,0 +1,482 @@
+# Riding Shallow Waters 
+
+<div>
+<img src="./antwerp-port.png" width=600 /> 
+</div>
+
+
+## with Domenico Lahaye and Henk Schuttelaars 
+
+## Open Issues
+
+1. expansion in Fourier modes of the non-linear friction term involving the non-differentiable term $\| \mathbf{u} \|$ (resort to Taylor expansions?) and the division by height (multiply entire equations by the height?)
+2. solving the linear harmonic balance equations (1/2): does the manipulation of truncated Fourier series leads to a fast matrix-vector multiplication (convolution)?
+3. solving the linear harmonic balance equations (2/2): are effective preconditioners (variants of shifted Laplace) available?  
+   
+## Section 1: Introduction 
+
+This project aims at contributing to the computational modeling of [tidal flows](https://en.wikipedia.org/wiki/Tide#Current) and [sediment transport](https://en.wikipedia.org/wiki/Sediment_transport) in rivers. The flow of water in rivers can be described by the [shallow water equations](https://en.wikipedia.org/wiki/Shallow_water_equations) (linear vs. non-linear variant, laminar vs. turbulent model). When exicited periodically (e.g. by tidal motion at the inlet of the channel), the non-linear nature of the equations will deform (modulate) the amplitude and frequency of the driving system. After sufficiently long time, the signal will become periodic again. Both time-integration (after spatial discretization or method of lines) and harmonic balance methods (either after spatial or temporal discretization) will be explored. See the Section entitled Analysis in [wikipedia page on tidal flows](https://en.wikipedia.org/wiki/Tide#Current) for a motivation of harmonic balance method in the context of this project. 
+
+The <b>goals</b> of the project include 
+1. to solve the shallow water equations using a blend of analytical and numerical methods;   
+2. to compute the amplitude and temporal frequency content of the computed axial and transversal velocity components and the water height;
+3. to discover patterns in the sediment formation and study the stability of these patterns (via bifurcation analysis).
+
+The <b>use of the Julia programming language</b> is an integral part of the learning objectives of this project. Non-linear terms play an essential role in modifying the temporal frequency content of waves as they propagate. The analysis of these non-linear terms requires the computation of the Jacobian, independent of whether a transient time-stepping or harmonic balance method is used. Functions to compute these Jacobians in Python do exist. These functions, however, are either computationally costly (in case that finite difference quotients are used) or non-trivial to use (in case that automatic differentiation in a library like e.g. [JAX](https://jax.readthedocs.io/en/latest/quickstart.html) is used). Switching to Julia alleviates these bottlenecks. 
+
+## Section 2: Shallow Water Flow 
+
+### Section 1.2: Shallow Water Equations 
+
+The shallow water equations describe the propagation of water waves in rivers. Both linear and non-linear variants of the model. They are derived from the Navier-Stokes equations by averaging in the depth direction. 
+
+The primary notebook for this level is [notebook on shallow water equations](./notes-shallow-water-equations.ipynb) (requires implementation of linear SWE (operators constant throught time integration) and non-linear SWE (operators updated at each time step)). 
+
+### Section 2.2: Implementation in Julia 
+
+Julia provides various package to analyze and solve the shallow water equations. These include (good to provide more explanation here) 
+- [TrixiShallowWater.jl](https://github.com/trixi-framework/TrixiShallowWater.jl);
+- [GridapGeosciences.jl](https://github.com/gridapapps/GridapGeosciences.jl);
+- [Oceananigans.jl](https://github.com/CliMA/Oceananigans.jl);
+- [SpectralWaves.jl](https://github.com/mcpaprota/SpectralWaves.jl): a spectral method for nonlinear water waves propagating over topography;
+- [FourierFlows.jl](https://github.com/FourierFlows/FourierFlows.jl): Fourier-based pseudospectral methods;
+- [WaterWaves1D.jl](https://github.com/WaterWavesModels/WaterWaves1D.jl): unidimensional surface gravity waves, aka water water 
+
+Supporting notebooks for this level include
+1. notebook on [scalar advection equation](./scalar_advection-equation.ipynb) (here we exclude diffusion. Wave propagation in one direction only);
+1. notebook on [one-dimensional shallow water equations](./one-dim-shallow-water-equations.ipynb) (coupled system of two transport equations); 
+
+## Section 3: Damped Non-Linear Wave Equation with Periodic Forcing
+
+Throughout we project, we make the following four <b>important</b> assumptions: 
+
+1. <b>periodic forcing</b>: the motion of water in the channel is caused by tital currents at the inlet of the channel. This scenario is thus similar to a wavepool. For simplicity, we assume a sinusoidal excitation at single frequency driving frequency $\omega_d$ appears. The single frequency assumption is merely a mild assumption, as more general periodic excitation can be decomposed into set of frequencies by a Fourier decomposition.
+2. <b>damping</b>: the motion of water is described by a the wave equation that contains damping (typically friction of the water with the river bed). This damping causes initial transient in the solution to disappear in time. A steady-state solution that depends on the driving frequency $\omega_d$ appears; 
+3. <b>non-linearity</b>: the wave equation contains non-linear transport and/or friction terms. This non-linearity causes the frequency of the driving force to be modulated. The solution contains more than one frequency, even if the driving frequency varries at a single frequency. Consider $\sin^3(x)$ as an example. We assume that the non-lineary is polynomial (in position, velocity or both). More general non-linearities can be accomodated via Taylor approximations;   
+4. <b>parametric</b>: the wave equation contains parameters such as the amplitude of the forcing or the amplitude of the polynomial non-linear terms. We are intered in how the solution depends on these parameters.
+
+<div>
+<img src="./rif010-rotterdam.jpg" width=600 /> 
+</div>
+
+
+## Section 4: Bifurcation Analysis 
+
+Study of points of equilibrium of the dynamical system (roots of coupled system of algebraic equations after linearizatio, eigenvalues and eigenvectors on the Jacobian) as function of parameter in the system. See e.g. tutorial example of [ModelingToolkit](https://docs.sciml.ai/ModelingToolkit/stable/tutorials/bifurcation_diagram_computation/) and tutorial example of [BifurcationKitDocs.jl](https://bifurcationkit.github.io/BifurcationKitDocs.jl/dev/). 
+
+### Section 1.4: Implementation in Julia 
+
+1. notebook on [solving the harmonic balance equations](./bifurcationkit.ipynb). In this notebook the harmonic balance equations are solved using bifurcation analysis tools. Both non-linear damping and non-linear stiffness are introduced;   
+
+## Section 5: Harmonic Balance Method 
+
+The harmonic balance method is explained (to some extend) in the notebook on [the harmonic balance method](./harmonic_balance_method.ipynb). (Requires more text and examples on a systematic derivation of the harmonic balance equations by computing coefficients as in a Fourier series. Possibly pointing to the package [ApproxFun.jl](https://juliaapproximation.github.io/ApproxFun.jl/latest/) for the approximation of the solution in a basis of sinus and cosinus function in case of linear PDEs. Not yet sure how to use ApproxFun.jl in case of nonlinear PDEs). 
+
+## Section 6: Project Levels 
+
+The project is divided in various sections that are outlined below.
+
+### Section 1.6: Scalar Wave Equation with Cubic Damping for a String
+
+Here we only consider the channel of water to be long and narrow. This allows to describe the channel along the $x$-direction (in the direction of the flow) only. To simplify concepts, we replace the water flow in a channel by the vibration of a long string or the propagation of a sound wave. The wave propagation is supposed to be driven by a periodic external forcing (spatial support of the external forcing remains to be specified). We furthermore include linear damping (and thus the disappearance of the homogeneous solution over time) and non-linear damping (and thus the apperance of higher order harmonics). The non-linearity introduced here serves as an illustration. Other non-linearities will be introduced later.  
+
+<b>Goals</b> The goal of the beginner level is to solve non-linear wave equations (scalar only or include vectorial as well?) in one spatial dimensions. More specifically, the goals are to: 
+1. solve the (un)damped <b>linear</b> wave equation with periodic forcing using analytical methods, the harmonic balance method and the method of lines (first discretize in space, then perform time integration). As analytical method, the method of seperation of variables (standing wave solution) or the method of characteristics (traveling wave solution) can be used. To take the non-homogeneous periodic forcing term into account analytically, [Duhamel's_principle](https://en.wikipedia.org/wiki/Duhamel's_principle) (convolution with Green's function, see also section on  Duhamels's principle in [wave equation](https://en.wikipedia.org/wiki/Wave_equation)) can be used. The availability of the analytical (closed form) solution allows to verify the accurary of the time stepping (discretization error in space and time) and harmonic balance solutions (truncation error in frequency domain). The solutions can be compared in frequency domain after taking the Fourier transform. In the linear case, the harmonic balance solution should match the analytical and numerical solution after sufficiently long time time required for initial transients to disappear from the solution. Profiling tools should allow to compare requirements of the harmonic balance and transient in terms of memory and CPU requirements; 
+2. solve the damped <b>non-linear</b> wave equation with periodic forcing using the harmonic balance method and the method of lines and repeat the previous analysis to the extend possible;
+3. study how the solution depends of parameters (e.g. driving frequency (resonance) and amplitude of the damping force); 
+
+<b>Problem Description</b> Let $x \in \Omega=(0,1)$ (in units m) denote the spatial domain. We here assume the string to have unit length. Let $t \in [0,T]$ (in units s) denote the time interval. Let $u(x,t)$ (in units m) denote the displacement of the string (position relative to equilibrium position) (see later for shallow water equation models in which $u(x,t)$ represents the velocity). Let $\partial u(x,t) / \partial t = \dot{u}(x,t)$ (in units m/s) denote the velocity of string. Let $c>0$ (in units m/s) denote the velocity of wave propagation. We assume that the motion of the string is subject to both friction force $F_{\gamma}$ and driving (external force) $F_d$ (both per unit mass, in units N/kg). We assume that the friction force depends on velocity $\dot{u}(x,t)$ only, i.e., $F_{\gamma} = F_{\gamma}[\dot{u}(x,t)]$. We assume that this dependency can be approximated by a third order polynomial denoted by 
+
+$$
+F_{\gamma}[\dot{u}(x,t)] = - \gamma \, \dot{u}(x,t) - \gamma_3 \, [\dot{u}(x,t)]^3 \, , 
+$$
+
+with positive coefficients $\gamma > 0$ and $\gamma_3 \geq 0$ (signs do matter here) (add more odd power terms to increase the challenge). (see later for alternative models for friction). The linear term (i.e. the term with $\gamma$) is assumed to be dominant and therefore always present in the model. This term is responsible for the damping of transients (i.e., the homogeneous part of the solution). Without the linear $\gamma$-term the harmonic balance method has no range of validity. The cubic $\gamma_3$-term is a positive correction to the $\gamma$-term that increases the friction force. The magnitude of the $\gamma_3$-term is large compared to $\gamma$-term only if $\dot{u}(x,t) \gg 1$. This is important to remember when seeking physical interpretations of results of model that include the $\gamma_3$-term. We assume that the external forcing $F_d(x,t)$ varries in space with $F_0(x)$ and sinusoidally in time with a driving frequency $\omega_d$. We can thus write 
+
+$$
+F_d(x,t) = F_0(x) \, \sin(\omega_d \, t) \, \text{ with } F_0(x) \text{ to be specified } \, .  
+$$
+
+The partial differential equation for the unknown string displacement $u(x,t)$ we intend to solve can be written as 
+
+$$
+\frac{\partial^2 \, u}{\partial t^2} + \gamma \frac{\partial \, u}{\partial t} + \gamma_3 \left( \frac{\partial \, u}{\partial t} \right)^3 
+= c^2 \frac{\partial^2 \, u}{\partial x^2} + F_0(x)\, \sin(\omega_d \, t)   
+$$ 
+
+We can flip the sign of the non-linear term for fun and explore how higher order harmonics are generated. 
+
+In defining the boundary and initial conditions, we will distinguish between a standing wave (separation of variables) and a traveling wave (method of characteristics) problem.
+
+<b>Model-Problem-1: Standing Wave Problem - Playing Guitar</b> In case of a standing wave problem, we supply homogeneous Dirichlet conditions at both sides of $\Omega$, i.e., we impose that both ends of the spring remain fixed
+
+$$
+u(0,t) = 0 \text{ and }  u(1,t) = 0  
+$$
+
+(spatial eigenmodes $X_n(x) = \sin(n \pi x)$ for $n \geq 1$ in the linear case). We furthermore impose non-zero initial conditions for the displacement $u(x,t)$ and zero initial conditions for the velocity $\dot{u}(x,t)$, i.e., we impose that
+
+$$
+u(x,0) = u_0(x) \text{ and } \dot{u}(x,0) = 0 \, , 
+$$
+
+with $u_0(x)$ left to be specified (temporal eigenmodes in case of no damping $T_n(t) = \cos(n c t)$ for $n \geq 1$). Temporal eigenmodes in case of linear damping ($\gamma_3 = 0$) are given by 
+
+$$
+T_n(t) = \left[ C_1 \cos(\frac{1}{2} \sqrt{4c^2n^2\pi^2-\gamma^2}t) + C_2 \sin(\frac{1}{2} \sqrt{4c^2n^2\pi^2-\gamma^2}t) \right] \exp(-\gamma/2 t)
+$$
+
+<b>Model-Problem-1: Standing Wave Problem - Linear - With External Forcing</b> In case that $F_0(x) = 1$ and no damping, a particular solution to the problem is given by 
+
+$$
+u_p(x,t) = u_p(t) = - \frac{1}{\omega_d^2} \sin( \omega_d t) \, . 
+$$
+
+The amplitude of this solution decreases quadratically with the driving frequency $\omega_d$. (No resonant modes are excited.  Need to set $F_0(x) = X_p(x)$ to find a resonant modes). We will revisit this feature below. In case of linear damping, a particular solution to the non-homogeneous problem is found by the method of variation of parameters, i.e., by substituting 
+
+$$
+u_p(x,t) = u_p(t) = A \cos( \omega_d t) + B \sin( \omega_d t) \, . 
+$$
+
+into the wave equation without spatial dependency, i.e., 
+
+$$
+\ddot{u}_p(t) + \gamma \dot{u}_p(t) = \sin( \omega_d t) 
+$$
+
+to find the following linear systems of equations for 
+
+$$ -\omega_d^2 A + \gamma \omega_d B = 0 $$
+
+$$ - \gamma \omega_d A - \omega_d^2 B = 0 $$
+
+with the solution
+
+$$ A = - \frac{\gamma \omega_d}{\omega_d^2 (\omega_d^2 + \gamma^2)} \text{ and } B = - \frac{1}{\omega_d^2 + \gamma^2}$$. 
+
+We have that 
+
+$$ A^2 + B^2 = 1/\omega_d^2 $$
+
+We recover the previous solution in case that $\gamma = 0$. (Need to study behavior of $A$ and $B$ in terms of $\gamma$) (Need to study other forms of $F_0(x)$ using Duhamel).  
+
+<b>Model-Problem-2: Traveling Wave Problem - Surfing Surfer</b> In case of a traveling wave problem, we supply periodic boundary conditions for the displacement $u(x,t)$ and the velocity $\dot{u}(x,t)$, i.e., we impose that 
+
+$$
+u(0,t) = u(1,t) \text{ and }  \dot{u}(0,t) = \dot{u}(1,t) 
+$$  
+
+(spatial eigenmodes $X_n(x) = C_1 \sin(2 n \pi x) + C_2 \cos(2 n \pi x) $ for $n \geq 1$).  Initial conditions for $u(x,t)$ and $\dot{u}(x,t)$ are derived from the analytical solution obtained from the analytical solution $u(x,t) = f(x-ct)+g(x+ct)$ obtained from the [method of characteristics](https://en.wikipedia.org/wiki/Method_of_characteristics). E.g., $u(x,t)$ and $\dot{u}(x,t)$ as Gauss curve and its time-derivative. 
+
+<b>Analytical Solution of Linear Version of Model Problem Including Damping</b> Solve above problems analytically. Ask what to expect is case the non-linear term is added. 
+
+<b>Method of Lines - Time Integration</b> The above wave equation can be solved numerically using the [method of lines](https://en.wikipedia.org/wiki/Method_of_lines). The method consists of two steps. In the first step, the continuous  problem is discretized in space. In the second step, the system of ordinary differential equations is solved using time-integration. This method is able to treat non-linear problems and is expected to generate reference solutions for future computations. Two variants of the method of lines are available. The first is a black-box approach that consists of using [ModelingToolkit](https://docs.sciml.ai/ModelingToolkit/stable/). The second is to build the implementation from scratch. In this latter approach, we use for the <b>spatial discretization</b> the central finite difference method on an uniform mesh with $N+1$ nodes (including left and right boundary nodes). Let $M \in {\mathbb R}^{(N+1) \times (N+1)}$ and $S \in {\mathbb R}^{(N+1) \times (N+1)}$ denote the mass and stiffness matrix resulting from the finite difference discretization. Then $M$ is the identify matrix and $S$ is a tridiagonal symmetric positive definite matrix. The matrix $S$ has positive diagonal entries. It therefore discretizes the term $- \partial^2 / \partial_x^2$ (beware of the sign). Let ${\mathbf F}_0 \in {\mathbb R}^{N+1}$ denote the spatial discretization of the spatial variation of the drivingf term $F_0(x)$. We refer to the [EE4375 course](https://github.com/ziolai/finite_element_electrical_engineering) for details. After spatial discretization, the following system of second order ordinary differential equations is obtained 
+
+$$
+\ddot{\mathbf{u}}(t) = \mathbf{G}(\mathbf{u},\dot{\mathbf{u}}, t) \in {\mathbb R}^{N+1}
+$$ 
+
+where $\mathbf{G}(\mathbf{u},t)$ contains both linear and non-linear terms. This systems is supplied with initial conditions for both $\mathbf{u}(t=0)$ and $\dot{\mathbf{u}}(t=0)$. This ODE system can be more explicitly be written as 
+
+$$
+\ddot{ {\mathbf u} }(t) + \gamma \, \dot{ {\mathbf u} }(t)  + \gamma_3 \, \left[ \dot{ {\mathbf u} }(t) \right]^3 + c^2 \, S \, {\mathbf u}(t) = 
+{\mathbf F}_0 \, \sin(\omega_d \, t) \in {\mathbb R}^{N-1} \text{ for internal nodes} 
+$$
+
+supplied with (homogeneous Dirichlet or periodic) boundary conditions and initial conditions. Time integration methods in Julia allow to discretize the second order time derivative directly (no longer applicable in case of shallow water equations) or to reformulate the problem as a system of first order coupled problems.
+
+Questions: 
+1. What is the accuracy of Method of Lines as a function of spatial and temporal resolution?
+2. Is it computationally advantageous to apply a split time-integration method and treat only the linear terms implicitly?  
+
+<b>Spectral Analysis of the (Shifted) Stiffness Matrix</b> We analyze the spectrum of $S$ and of $S - \omega_d^2 I$ for both Dirichlet and periodic boundary conditions. Expect resonant mode to arrise. 
+
+<b>Harmonic Balance Method in Continuous Setting for Linear Wave Equation - Method of Undetermined Coefficients</b>
+
+The harmonic balance method in spatially continuous setting assumes a solution of the form (single frequency, truncated Fourier series, method of undetermine coefficients)
+
+$$
+u^{hb}(x,t) = A_c(x) \, \cos(\omega_d \, t) + B_s(x) \, \sin(\omega_d \, t) 
+$$
+
+where $A_c(x)$ and $B_s(x)$ are the amplitude functions of the cos and sin mode, respectively. Taking the time-derivative, we obtain 
+
+$$
+\dot{u}^{hb}(x,t) = - \omega_d \, A_c(x) \, \sin(\omega_d \, t) + \omega_d \,  B_s(x) \, \cos(\omega_d \, t) \, . 
+$$
+
+We assume that the non-linear damping coefficient $\gamma_3$ is zero, i.e., $\gamma_3=0$. Substituting this harmonic balance solution into the linear wave equation with damping yields the following system of coupled Helmholtz equations for  $A_c(x)$ and $B_s(x)$ 
+
+$$
+c^2 \, A_c''(x) + \omega_d^2 \, A_c + \gamma \, \omega_d \, B_s(x) = 0 
+$$ 
+
+and 
+
+$$
+c^2 \, B_s''(x) + \omega_d^2 \, B_s - \gamma \, \omega_d \, A_c(x) = F_0(x)
+$$ 
+
+supplied with the boundary homogeneous Dirichlet boundary conditions for both $A_c(x)$ and $B_s(x)$ in case of the standing wave scenario 
+
+$$
+A_c(x=0) = 0 \text{ and } A_c(x=1) = 0 \text{ and } 
+B_s(x=0) = 0 \text{ and } B_s(x=1) = 0 \, . 
+$$
+
+and periodic boundary conditions for $A_c(x)$ and $B_s(x)$ in case of the traveling wave scenario. 
+
+Observe that 
+1. in case of no linear damping $\gamma = 0$, we have that $A_c(x) = 0$; 
+1. the amplitude of $A_c(x)$ ($B_s(x)$) to increase (decrease) as the damping parameter is increased; 
+1. stronger gradients develop at the boundaries of the domain (likely due the Dirichlet boundary conditions employed)
+2. interesting to compare time and frequency solution method; 
+
+<b>Harmonic Balance Method in Discrete Setting for Linear Wave Equation - Method of Undetermined Coefficients</b>
+
+The harmonic balance method in spatially discrete setting assumes a solution of the form 
+
+$$
+{\mathbf u}^{hb}(t) = \mathbf{A}_c \, \cos(\omega_d \, t) + \mathbf{B}_s \, \sin(\omega_d \, t) 
+$$
+
+where $\mathbf{A}_c \in \mathbb{R}^{N+1}$ and $\mathbf{B}_s \in \mathbb{R}^{N+1}$ are vectors of amplitudes of the cos and sin mode, respectively. We will assume here that $\mathbf{A}_c$ and $\mathbf{B}_s$ satisfy both the boundary conditions (same in method of seperation of variables). 
+
+Coupled system of linear equations for $\mathbf{A}_c$ and $\mathbf{B}_s$
+
+$$ ( c^2 \, S - \omega_d^2 M )\, \mathbf{A}_c   + \omega_d \, \gamma \, \mathbf{B}_s = {\mathbf 0}    $$
+$$ - \omega_d \, \gamma \, \mathbf{A}_s + ( c^2 \, S - \omega_d^2 M) \, \mathbf{B}_s = {\mathbf F}_0 $$
+
+supplied with boundary conditions for $\mathbf{A}_c$ and $\mathbf{B}_s$. In matrix-vector form 
+
+$$
+\begin{pmatrix} c^2 \, S - \omega_d^2 M & \omega_d \, \gamma \, I  \\  
+                - \omega_d \, \gamma \, I & c^2 \, S - \omega_d^2 M \end{pmatrix}
+\begin{pmatrix} \mathbf{A}_c \\ \mathbf{B}_s \end{pmatrix} = 
+\begin{pmatrix} \mathbf{0} \\ \mathbf{F}_0 \end{pmatrix}
+$$
+
+with row $1$, row $N+1$, row $N+2$ and row $2\,N+2$ overwritten to enforce $\mathbf{A}_c$ and $\mathbf{B}_s$ to satisfy the boundary conditions. Of interest here is an analysis of the eigenvalues of the coefficient matrix as a function of $\omega_d$ and $\gamma$. 
+
+<b>Harmonic Balance Method in Continuous Setting for Non-Linear Wave Equation - Expand and Truncate</b>
+
+As in the linear problem setting, we assume the harmonic balance solution to be of the form 
+
+$$
+u^{hb}(x,t) = A_c(x) \, \cos(\omega_d \, t) + B_s(x) \, \sin(\omega_d \, t) 
+$$
+
+Although the problem is non-linear, we assume superposition and thus that both the cos and sin amplitude $A(x)$ and $B(x)$ satisfy the homogeneous Dirichlet boundary conditions (standing wave) or periodic boundary conditions (traveling wave problem). The velocity is then given by  
+
+$$
+\dot{u}^{hb}(x,t) = - \omega_d \, A_c(x) \, \sin(\omega_d \, t) + \omega_d \,  B_s(x) \, \cos(\omega_d \, t) \, . 
+$$
+
+The non-linear term $\gamma_3 \left( \frac{\partial \, u^{hb}}{\partial t} \right)^3$ is given up to first harmonics given by
+
+$$
+\gamma_3 \left( \frac{\partial \, u^{hb}}{\partial t} \right)^3 = 
+\gamma_3 \, \omega^3_d \, [ 0.75 \, B_s(x)^3 + 1.5 \, A_c(x)^2 \, B_s(x) ]    \, \cos(\omega_d \, t) + 
+\gamma_3 \, \omega^3_d \, [ - 0.75 \, A_c(x)^3 - 1.5 \, A_c(x) \, B_s(x)^2 ]  \, \sin(\omega_d \, t)
+$$
+
+(observe the factor $\omega_d^3$. See seperate notebook [beginner_analytical](./beginner_analytical.ipynb). 
+
+We thus obtain the following coupled system of non-linear Helmholtz equations for $A_c(x)$ and $B_s(x)$
+
+$$
+c^2 \, A_c''(x) + \omega_d^2 \, A_c + \gamma \, \omega_d \, B_s(x) + 
+\gamma_3 \, \omega^3 \, [ 0.75 \, B_s(x)^3 + 1.5 \, A_c(x)^2 \, B_s(x) ] = 0 
+$$ 
+
+and 
+
+$$
+c^2 \, B_s''(x) + \omega_d^2 \, B_s - \gamma \, \omega_d \, A_c(x) -  
+\gamma_3 \, \omega^3 \, [ 0.75 \, A_c(x)^3 + 1.5 \, A_c(x) \, B_s(x)^2 ]= F_0(x) \, . 
+$$ 
+
+Observe that 
+1. damping increases further (due to globally a larger damping coefficient);
+1. larger damping causes the solution in the interior of the domain to reach a constant value;
+1. sign in front of non-linear terms clearly have their importance;
+2. non-linearity is polynomial in $A_c(x)$ and $B_s(x)$. Jacobian therefore easy to derive. 
+
+Derive the Jacobian (linear plus non-linear part). Derive the eigenvalues of the Jacobian. 
+
+<b>Case Studies</b> We distinguish the following four cases studies 
+1. Case (1/4): <b> Undamped ($\gamma = 0$) Linear ($\gamma_3 = 0$) Unforced ($F_d(x)=0$) Model</b> Based on the analogy of the mass-spring-damper model, expect resonant modes for particular values of the driving frequency $\omega_d$. Write the single harmonic anzats for the harmonic balance method as $u^{hb}(x,t) = A_c(x) \, \cos(\omega_d \, t) + B_s(x) \, \sin(\omega_d \, t)$. In absence of damping, expect to obtain $A_c(x) = 0$ and $B_s(x)$ with largest amplitude. Homogeneous part of the solution does not drop off. Expect solution to be incomplete without homogeneous part of the solution. Reference solution for the next step. 
+
+1. Case (2/4): <b> Damped ($\gamma \neq 0$) Linear ($\gamma_3 = 0$) Unforced ($F_d(x)=0$) Model</b> Based on the analogy of the mass-spring-damper model, expect amplitude of $A_c(x)$ to increase and the amplitude $B_s(x)$ to decrease as the linear damping coefficient $\gamma$ is increased. Transients disappear due to damping. Reference solution for the next step.
+
+1. Case (3/4): <b> Damped ($\gamma \neq 0$) Linear ($\gamma_3 = 0$) Forced ($F_d(x) \neq 0$) Model</b> Homogeneous part of the solution dies out due to damping. Solution due to forcing emerges. Solution varries in time with angular frequency $\omega_d$. Reference solution for the next step.
+ 
+1. Case (4/4): <b> Non-Linear ($\gamma_3 \neq 0$) Model</b> Full model. The driving frequency $\omega_d$ is modulated by the non-linearity of the damping force. The solution thus consists of multiple harmonics. 
+
+<b>Analytical computations using pen and paper</b> 
+Supporting notebooks for this level include:
+1. [beginner_analytical](./beginner_analytical.ipynb): seperation of variables for the scalar wave equation with and without damping. Eigenvalues, eigenmodes, resonant frequency, frequency response sweeps;
+
+Questions: 
+1. how to implement Duhamel's principle to take periodic external drive into account. Should be do-able using sympy. An example is given at [this link](https://stackoverflow.com/questions/74672385/how-to-convolution-integrationduhamel-integration-by-python); 
+2. how to extend from standing wave to traveling wave solutions? 
+
+<b>Symbolic computations using sympy</b>
+1. [beginner_symbolic](./beginner_symbolic.ipynb): symbolic solution of the scalar Helmholtz equation (scalar wave equation without damping - sinusoidal forcing - single harmonic harmonic harmonic balance method) and of two coupled Helmholtz equation (scalar wave equation with damping - cosinus mode appears);
+
+<b>Solving the systems of ODEs for the amplitude of the harmonic modes numerically using a shooting method (Dedicated 1D)</b>
+1. [beginner_shooting_method](beginner_shooting_method.ipynb): solve the 1D wave equation using the harmonic balance method by solving the boundary value problem for the amplitiudes of the harmonic amplitiudes using a shooting method. Start by consering an expansion in a single harmoinic. In this case, the harmonic balance method harmonic balance method results in a coupled system of two Helmholtz equations for the amplitudes $A(x)$ and $B(x)$. Possibly extend later to two or more harmonics. Compare the solutions obtained by time-integration and the harmonic balance method for various frequencies. Repeat above for various values of the amplitude of the non-linear damping and investigate how the amplitide of the dominant resonant modes is affected (i.e., perform a bifurcation analysis);
+
+Questions: 
+1. what is the computational efficiency of the shooting method (run verbose, profile using macro @btime)? How does computational efficiency change with the initial guess employed? 
+
+<b>Solving the non-linear wave equation using ModelingToolkit</b> 
+1. [beginner_modeling_toolkit](beginner_modeling_toolkit.ipynb)
+
+Questions:  
+1. how mature is the combination of ModelingToolkit.jl and MethodofLines.jl to solve the shallow water equations using a staggered finite difference stencil. See [staggered in MethodofLines](https://docs.sciml.ai/MethodOfLines/stable/staggered/).   
+
+<b>Solving the non-linear wave equation using a home-brewed finite difference method (Extends to 2D)</b>
+1. [beginner_fdm](./beginner_fdm.ipynb): solve the 1D wave equation numerically by appling the method of lines. First discretize the equation in space. Subsequently solve the initial value problem for the resulting coupled system of ordinary differential equations using time-integration. For spatial discretization, a central finite difference scheme on a uniform mesh can be used. (Provide modList alternatives such as ApproxFun and Chmly here). For time integration, methods provided by [SciML.jl](https://docs.sciml.ai/Overview/stable/) can be used. Time-integration provides a reference solution. Investigate the computed solution in frequency domain using Fourier transformations. Repeat for various driving frequencies and investigate the occurance of resonant frequencies and corresponding resonant eigenmodes. Repeat for various scenarios;
+
+Questions:  
+1. how to extend the linear finite difference code to treat non-linear problems? How to derive the Jacobian? How to solve the linear system at each Newton iteration? 
+
+### Section 2.6: Various Possible Extensions 
+
+The goal of this intermediate level is to consider various extensions described below.   
+
+<b>Periodically-Forced Scalar Wave Equation with Cubic Damping in Two Spatial Dimensions</b> - Ask students to send report of currently available results 
+
+1. problem formulation: solve the partial differential equation for the unknown membrane displacement $u(x,y,t)$ we intend to solve can be written as 
+
+$$
+\frac{\partial^2 \, u}{\partial t^2} + \gamma \frac{\partial \, u}{\partial t} + \gamma_3 \left( \frac{\partial \, u}{\partial t} \right)^3 
+= c^2 \bigtriangleup \, u + F_0(x,y)\, \sin(\omega_d \, t)   
+$$
+
+2. reference solutions: closed form analytical solutions for the linear problem and method of manufactured solutions for the non-linear problem; 
+3. symbolic set-up: same as 1D problem. Symbolic solve no longer applicable for 2D (both $x$ and $y$) problems as currently unclear how to solve partial differential equations symbolically;
+4. shooting method: no longer applicable for 2D (both $x$ and $y$) problems as shooting method is designed to solve ordinary differential equations;
+5. spatial discretization: second order finite difference scheme on uniform grids. See EE4375 course notes. 
+6. time stepping method (method of lines): solve coupled system of ordinary differential equations using time-stepping using [MethodOfLines](https://docs.sciml.ai/MethodOfLines/stable/), a home-brewed solver or alternative. Examine explicit and implicit time integration methods with a variabele time step. Confirm that higher driving frequency results in a smaller time step. Examine how the linear solver within the time-stepping should be set. Should a splitting method that treats the non-linearity explicitly be used?
+7. harmonic balance method with single harmonic: derivative and solve the linear and non-linear coupled partial differential (Helmholtz) equations for the harmonic mode amplitudes $A_c(x,y)$ and $B_s(x,y)$ using again [MethodOfLines](https://docs.sciml.ai/MethodOfLines/stable/), a home-brewed finite-difference solver or alternative. Examine solving the non-linear system of equations using Newton-Krylov method with exact sparse Jacobian;
+8. harmonic balance method with two harmonics: extend above. Examine at which value of $\gamma_3$ a single frequency is insufficiently accurate and two frequencies should be used instead. Plot difference in solution with one and two frequencies; 
+
+<b>Periodically-Forced Scalar (Non-)Linear Advection Equation in One Spatial Dimension</b> - Ask students to review and to report. 
+
+1. problem formulation: solve a scalar (non-)linear advection equation with sinusoidal forcing. The non-linearity appears in at least one of two terms. The first term is the non-linear convective term (similar Burgers equation). The second term is the cubic damping term proportional to $u^3(x,t)$. To obtain solutions that are periodic is space, periodic boundary conditions are imposed. For problem formulation, see notebook [scalar_advection_equation](./scalar_advection_equation.ipynb);
+
+$$
+\frac{\partial \, u}{\partial t} + u \frac{\partial \, u}{\partial x} = - \gamma u - \gamma_3 u^3 + F_d(x) \sin(\omega_d t)
+$$ 
+   
+3. reference solutions: provides reference solutions for the (non-)linear problem; 
+4. symbolic set-up and linear solve: in problem set-up, expand the non-linear terms in Fourier modes. In problem solve, solve the linear problem using periodic boundary conditions. Currently, the infrastructure in symbolic solve fails to implement periodic boundary conditions. Infrastructure to solve non-linear problems is missing as well. Using Dirichlet boundary conditions, the harmonic mode amplitudes are seen to decay over the spatial coordinate $x$ (thus no periodic solutions are obtained). See Section 4 of notebook [beginner_symbolic](./beginner_symbolic.ipynb);
+5. shooting method solve: solves the linear and non-linear problem for the harmonic mode amplitudes. Currently implements single harmonic expansion. Leaves space to extend to two and possibly more harmonics. The shooting method is known to be computationally expensive. The use of the shooting method is suggested here as a tool to generate reference solutions at (hopefully) a limited implememntation effort. See notebook [shooting_advection_equation](shooting_advection_equation.ipynb);
+6. spatial discretization: first order finite difference scheme on uniform grids (requires more details); 
+7. time stepping method (method of lines): (requires more details on the temporal and spatial discretization). Using either a home-brewed FDM code on a uniform mesh or alternative. Should a splitting method that treats the non-linearity explicitly be implemented? See notebook [fdm_advection_equation](./fdm_advection_equation.ipynb);
+8. finite difference harmonic balance methods: as before;
+
+Ask students: 
+
+1. derive the harmonic balance equations in the linear and non-linear case using sympy;
+2. solve the harmonic balance equations in the linear and non-linear case using a shooting method;
+3. solve the scalar advection equation using the method of lines; 
+
+<b>Periodically-Forced (Non-)Linear Shallow Water Equations in One Spatial Dimension</b> 
+
+1. problem formulation: let $h(x,t)$ and $u(x,t)$ denote the height and the $x-$velocity of the water in the channel, respectively. We wish to solve the system of two first order transport equations with periodic forcing, linear convective, linear damping and non-linear (cubic) damping terms
+
+$$ \frac{\partial h}{\partial t} = - \text{div}(u) = - \frac{\partial u}{\partial x}  $$ 
+$$ \frac{\partial u}{\partial t} = \text{grad}_x(h) - \gamma u - \gamma_3 u^3 + F_d(x) \sin(\omega_d t) 
+   = \frac{\partial h}{\partial x} - \gamma u - \gamma_3 u^3 + F_d(x) \sin(\omega_d t)$$
+
+where $F_d(x) = \sin(k \pi x)$. We supply periodic boundary conditions on both $h(x,t)$ and $u(x,t)$ (else no periodic solutions) and suitable initial conditions;
+
+3. symbolic set-up: in problem set-up, expand the non-linear terms in Fourier modes, collect terms and derive (non)-linear system for the Fourier mode amplitudes;
+3. shooting method solve: solves the linear and non-linear problem for the harmonic mode amplitudes; 
+4. finite difference time-domain (method of lines) method. Provides reference solutions in time-domain. Plot the solution in time domain as shown in the notebooks;
+5. finite difference harmonic balance methods. Solve non-linear system of equations using Newton-Krylov method with exact sparse Jacobian. Explore how the solution changes in case that the amplitude of the non-linearity ($\gamma_3$) or the angular frequency of the driving force ($\omega_d$) changes;
+
+<b>Periodically-Forced (Non-)Linear Shallow Water Equations in Two Spatial Dimensions</b> 
+
+1. problem formulation: let $h(x,y,t)$, $u(x,y,t)$ and $v(x,y,t)$ denote the height, the $x-$velocity and the $y-$velocity of the water in the channel, respectively. We wish to solve the system of three first order transport equations 
+
+$$ \frac{\partial h}{\partial t} = - \text{div}(u) = - \frac{\partial u}{\partial x} - \frac{\partial v}{\partial y} $$ 
+$$ \frac{\partial u}{\partial t} = - \text{grad}_x(h) = - \frac{\partial h}{\partial x} - \gamma u - \gamma_3 u^3 + F_d(x) \sin(\omega_d t)$$
+$$ \frac{\partial v}{\partial t} = - \text{grad}_y(h) = - \frac{\partial h}{\partial y} $$
+
+plus periodic boundary and initial conditions. Staggered grid for spatial discretization. ($h$ in the cell-centers, $u$ in the center of vertical faces and $v$ in the center of horizontal faces). 
+
+Extend discrete spatial operators for 1D to 2D to tensor product with the identify matrix. Set discrete gradient wrt $x$ as $B_x = B \otimes I$ (differentiation wrt to $x$, thus keeping $y$-fixed) and $B_y = I \otimes B$, and define gradient and divergence operators. Define semi-discrete equations. Perform time-integration on these equations. 
+
+Extend temporal discretization by extending @view from 2 fields to three fields. 
+
+<b>Automatic Conversion from Time-Domain to Frequency Domain for Arbitrary Number of Modes</b>
+1. Lorentz Linearization of the friction force; 
+2. paper by godin-gutierrez-1986; 
+3. how to develop a generic finite difference / finite element harmonic balance solver? 
+3. can the package [ApproxFun.jl](https://juliaapproximation.github.io/ApproxFun.jl/latest/) be used to automate the projection on expression involving higher order harmonics into the subspace of lower order harmonics. See [this Discourse post](https://discourse.julialang.org/t/truncated-power-series-in-approxfun-jl/124593) 
+
+###  Section 3.6: Hydrodynamics: Shallow Water Equations with Cubic Damping for a Rectangular Channel 
+
+The <b>goals</b> of the expert level is to extend previous results to the shallow water equations on a rectangular channel. 
+
+1. one-dimensional linear eqns for velocity in $u$ (x-direction) $\xi$ and water elevation  - eqns + bc + ic: solve using a [staggered grid](https://docs.sciml.ai/MethodOfLines/stable/staggered/);  
+2. one-dimensional non-linear eqns: add FFT to show non-linear harmonics that appear;
+3. two-dimensional linear eqns;
+4. tw0-dimensional non-linear eqns;
+
+<b>Two-Dimensional Linear Model</b> 
+    
+###  Section 4.6: Morphodynamics: Pattern Formation in Sediment Transport in Rivers 
+
+Add two scalar transport to the hydrodynamics model developed before. 
+
+The first transport equation describes the diffusive and convective transport of sediment in the water. The water transports the sediment. The sediment in turns affect the flow of water (by adding mass and viscosity to the water and thus slowing down the water). 
+
+The second transport equation describes the evolution of the morphology of the bed. 
+
+The morphology evolves on a time-scale than the hydrology time-scale (due to the averaging of the water fluxes in the morphology model).  
+
+###  Section 5.6: Bifurcation analysis
+
+Study of the spectrum of the problem (eigenvalues and eigenvectors) after discretization in function of problem parameters. Using BifurcationKit.jl. See 2026 student report. 
+
+## Section 7: The Julia Programming Language
+
+### Introductory Material
+- Elementary introduction: [Thinking Julia](https://benlauwens.github.io/ThinkJulia.jl/latest/book.html);
+- Course: [Scientific-Programming-in-Julia](https://juliateachingctu.github.io/Scientific-Programming-in-Julia/stable/);  
+- Aalto Short Course: [julia-introduction](https://github.com/AaltoRSE/julia-introduction); 
+- Video Collection by Chris Rackauckas: [link](https://www.youtube.com/playlist?list=PLCAl7tjCwWyGjdzOOnlbGnVNZk0kB8VSa) 
+- Pointer to lots of goodies: [Nouvelles Julia](https://pnavaro.github.io/NouvellesJulia/pages/2022_03.html);
+
+### Linear Algebra Tools
+1. package for Krylov subspace methods;
+2. package for preconditioners;
+3. package for Algebraic Multigrid Methods: can the set-up phase be performed on the real part of the matrix? Can the solve part (Gauss-Seidel smoother) be performed in complex airhmetic;
+4. package for condition number of matrices SchurComplement; 
+
+### Metaprogramming Tools
+1. MacroTools.jl 
+
+## References 
+
+1. book by Boyce and di Prima on differential euations;
+2. book by Evans on Partial Differential Equations; 
+1. Book by Malte Krack and Johann Gross <i>Harmonic Balance for Non-Linear Vibration Problems</i>: [link](https://mega.nz/file/fYFWxQBT#OzIjwMd56nQDBzOeJ1VdSAWIO6i3dWuzUw4qnsFCQHs);
+2. book by Randall LeVeque [Finite Volume Methods for Hyperbolic Problems](https://www.cambridge.org/core/books/finite-volume-methods-for-hyperbolic-problems/97D5D1ACB1926DA1D4D52EAD6909E2B9). In the context of the project, Chapter 13 of this book is valuable to look into.
+4. lecture notes by Hillary Weller [Numerics: The Analysis and Implementation of numerical methods for solving differential equations](https://www.met.reading.ac.uk/~sws02hs/teaching/PDEsNumerics/PDEsNumerics_2_student.pdf). In the context of the project, Chapter 7 of these lecture notes are valuable to look into.
+5. Nonlinear Propagation of a Cylindrical Wave — Verification Model: Comsol Multiphysics Model: [model](https://www.comsol.com/model/nonlinear-propagation-of-a-cylindrical-wave-verification-model-88771); 
+6. Master thesis of Marco Roozendaal: [link](https://repository.tudelft.nl/islandora/object/uuid%3Aedc2ffd6-00fd-4cd6-883b-13b14528cb72?collection=education) 
+7. PhD Thesis of Tjebbe Hepkema: Chapter 5 in particular: [link](https://mega.nz/file/nMF2DaDA#W-nuZ_LKQkcN8x-dZiXY4VD1gNRiTzf46RH0RQCEP9E). Includes linear stability analysis. 
+8. PhD Thesis of Mirian Ter Brake: [link](https://repository.tudelft.nl/islandora/object/uuid:5cfcad13-0140-4ecc-a61b-217191b7611f?collection=research)
+9. 2022 minor students report: [link](https://mega.nz/file/zMVySRYS#Pojfaiy0OrE1bncgTiRftYnuLzmDgiZM4t_xEneQSGQ)
+10. 2022 minor students github repository: [link](https://github.com/victoriayuechen/Nonlinear-tidal-bars)
+11. 2023 minor students report part A: [link](https://mega.nz/file/CMkn3KaK#F0VkA8qduoqYQhuUdhllTsHJSetERdP6oF2yeszb7gg)
+12. 2023 minor students report part B: [link](https://mega.nz/file/LMUElTzK#phkzaRSQ2uu-eSgxM-pS2zGq7ASQ96GhOG1myYRJabg)
+13. 2023 minor students report part B further elaborated: [link](https://mega.nz/file/bcVilJSb#l7eQk-9NWH-ICmZ3u886W8vn3Ds7jheNu6q4xqjSkZs)
+14. Chapter 7 on forced oscillations of the book Nonlinear Ordinary Differential Equation by Jordan and Smith discusses forced oscillations: see [link](https://www.google.nl/books/edition/Nonlinear_Ordinary_Differential_Equation/ewtREAAAQBAJ?hl=en&gbpv=1&dq=Jordan+smith+nonlinear+ordinary+differential+equations&printsec=frontcover)
+15. paper by Elliot e.a. Nonlinear damping and quasi-linear modeling provides reference solutions for the harmonic balence method;
