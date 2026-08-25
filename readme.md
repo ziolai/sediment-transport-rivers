@@ -152,7 +152,9 @@ $$ - \gamma \omega_d A - \omega_d^2 B = 0 $$
 with the solution
 
 $$ 
-A = - \frac{\gamma \omega_d}{\omega_d^2 (\omega_d^2 + \gamma^2)} \text{ and } B = - \frac{1}{\omega_d^2 + \gamma^2}
+A = - \frac{\gamma \omega_d}{\omega_d^2 (\omega_d^2 + \gamma^2)} 
+\text{ and } 
+B = - \frac{1}{\omega_d^2 + \gamma^2}
 $$. 
 
 We have that 
