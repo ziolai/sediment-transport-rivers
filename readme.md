@@ -391,7 +391,7 @@ $$ \frac{\partial h}{\partial t} = - \text{div}(u) = - \frac{\partial u}{\partia
 $$ \frac{\partial u}{\partial t} = \text{grad}_x(h) - \gamma u - \gamma_3 u^3 + F_d(x) \sin(\omega_d t) 
    = \frac{\partial h}{\partial x} - \gamma u - \gamma_3 u^3 + F_d(x) \sin(\omega_d t)$$
 
-where $F_d(x) = \sin(k \pi x)$. We supply periodic boundary conditions on both $h(x,t)$ and $u(x,t)$ (else no periodic solutions) and suitable initial conditions;
+where $F_d(x) = \sin(k \pi x)$. The forcing term $F_d(x) \sin(\omega_d t)$ is an idealized periodic forcing term. This term can be replaced be more realistic models in the future. We supply periodic boundary conditions on both $h(x,t)$ and $u(x,t)$ (else no periodic solutions) and suitable initial conditions;
 
 3. symbolic set-up: in problem set-up, expand the non-linear terms in Fourier modes, collect terms and derive (non)-linear system for the Fourier mode amplitudes;
 3. shooting method solve: solves the linear and non-linear problem for the harmonic mode amplitudes; 
@@ -406,7 +406,7 @@ $$ \frac{\partial h}{\partial t} = - \text{div}(u) = - \frac{\partial u}{\partia
 $$ \frac{\partial u}{\partial t} = - \text{grad}_x(h) = - \frac{\partial h}{\partial x} - \gamma u - \gamma_3 u^3 + F_d(x) \sin(\omega_d t)$$
 $$ \frac{\partial v}{\partial t} = - \text{grad}_y(h) = - \frac{\partial h}{\partial y} $$
 
-plus periodic boundary and initial conditions. Staggered grid for spatial discretization. ($h$ in the cell-centers, $u$ in the center of vertical faces and $v$ in the center of horizontal faces). 
+plus periodic boundary and initial conditions. The forcing term $F_d(x) \sin(\omega_d t)$ is again an idealized periodic forcing term.Staggered grid for spatial discretization. ($h$ in the cell-centers, $u$ in the center of vertical faces and $v$ in the center of horizontal faces). 
 
 Extend discrete spatial operators for 1D to 2D to tensor product with the identify matrix. Set discrete gradient wrt $x$ as $B_x = B \otimes I$ (differentiation wrt to $x$, thus keeping $y$-fixed) and $B_y = I \otimes B$, and define gradient and divergence operators. Define semi-discrete equations. Perform time-integration on these equations. 
 
