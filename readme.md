@@ -395,7 +395,7 @@ $$ \frac{\partial h}{\partial t} = - \text{div}(u) = - \frac{\partial u}{\partia
 $$ \frac{\partial u}{\partial t} = \text{grad}_x(h) - \gamma u - \gamma_3 u^3 + F_d(x) \sin(\omega_d t) 
    = \frac{\partial h}{\partial x} - \gamma u - \gamma_3 u^3 + F_d(x) \sin(\omega_d t)$$
 
-where $F_d(x) = \sin(k \pi x)$. The forcing term $F_d(x) \sin(\omega_d t)$ is an idealized periodic forcing term. This term can be replaced be more realistic models in the future. We supply periodic boundary conditions on both $h(x,t)$ and $u(x,t)$ (else no periodic solutions) and suitable initial conditions;
+where $F_d(x) = \sin(k \pi x)$. The forcing term $F_d(x) \sin(\omega_d t)$ is an idealized periodic forcing term. The non-linear term $\gamma_3 u^3$ is an idealized non-linear term that represents non-linear interactions in the fluid or non-linear friction with the river bed. Both terms can be replaced be more realistic models in the future. We supply periodic boundary conditions on both $h(x,t)$ and $u(x,t)$ (else no periodic solutions) and suitable initial conditions;
 
 3. symbolic set-up: in problem set-up, expand the non-linear terms in Fourier modes, collect terms and derive (non)-linear system for the Fourier mode amplitudes;
 3. shooting method solve: solves the linear and non-linear problem for the harmonic mode amplitudes; 
